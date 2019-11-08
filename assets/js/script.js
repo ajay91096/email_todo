@@ -15,7 +15,7 @@ $(document).ready(function(){
 
       email.add = $('#email input').val();
       emails.push(email);
-      let add_div = "<div><input id=\""+email.id+"\" type=\"checkbox\" name=\"close\"><span>"+email.add+"</span><span id=\""+email.id+"\">X</span></div>";
+      let add_div = "<div><input id=\""+email.id+"\" type=\"checkbox\" name=\"close\"><span class=\"email\">"+email.add+"</span><span id=\""+email.id+"\">X</span></div>";
       $("#addtodo").append(add_div);
 
     } else {
@@ -46,6 +46,13 @@ $(document).ready(function(){
              }
           })
       }
+  });
+
+  $("#search input").on("keyup", function() {
+    var value = $(this).val().toLowerCase();
+    $("#addtodo .email").filter(function() {
+      $(this).closest("div").toggle($(this).text().toLowerCase().indexOf(value) > -1)
+    });
   });
 
   function validateEmail(email) {
