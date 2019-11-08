@@ -1,60 +1,55 @@
+$(document).ready(function(){  
 
-//Check off Specific Todos By Clicking
-$("ul").on("click", "li", function () {
-  $(this).toggleClass("completed");
-});
+  let emails = [];
 
-//Click on X to delete Todo
-$("ul").on('click', "span", function (e) {
-  e.stopPropagation();
-  $(this).closest("li").fadeOut(500,function() {
-   $(this).remove();
+  $('#add').on('click', function() {
+    let emailval = $('#email input').val();
+    if (validateEmail(emailval)) {
+      let email = {};
+      let errordiv = $('#email span');
+      errordiv.remove("span");
+
+      if(emails.length != 0) {
+        email.id = emails[emails.length - 1].id + 1;
+      } else { email.id = 1; }
+
+      email.add = $('#email input').val();
+      emails.push(email);
+      let add_div = "<div><input id=\""+email.id+"\" type=\"checkbox\" name=\"close\"><span>"+email.add+"</span><span id=\""+email.id+"\">X</span></div>";
+      $("#addtodo").append(add_div);
+
+    } else {
+      $('#email span').remove("span");
+      $('#email').append("<span>Please enter valid email</span>");
+    }
+
   });
-});
 
-//Clear All
-$(".removeall").on('click', function (e) {
-    $("li").fadeOut(500, function() {
-      $(this).remove();
-    });
-});
+  $("#addtodo").on('click', 'span', function() {
+    let id = $(this).attr('id');
+    let remove = emails.filter(item => (item.id == id));
+    emails.pop(remove);
+    $(this).closest("div").remove();
+  });
 
-//Add new todos
-$("input[type='email']").keypress(function(e) {
-  if(e.which === 13) {
-    //grab text
-    var todoText = $(this).val();
-    //append todotext to ul
-    if( $(this).val() !== "") {
-    $("ul").append("<li><span><i class='fa fa-trash'> </i></span>" + todoText + "</li>");
+  $('#disable :checkbox').change(function() {  
+      if (this.checked) {
+          $("#addtodo div").each(function() {
+            if($(this).find("input").is(":checked")) {
+              $(this).hide();
+            }
+          })
+      } else {
+          $("#addtodo div").each(function() {
+             if($(this).find("input").is(":checked")) {
+               $(this).show();
+             }
+          })
       }
-    //clear text
-    $(this).val("");
+  });
+
+  function validateEmail(email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
   }
 });
-
-$(".add").click(function() {
-  $("input[type='text']").fadeToggle(200);
-});
-
-function validateEmail(email) {
-  var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  return re.test(email);
-}
-
-function validate() {
-  var $result = $("#result");
-  var email = $("#email").val();
-  $result.text("");
-
-  if (validateEmail(email)) {
-    $result.text(email + " is valid :)");
-    $result.css("color", "green");
-  } else {
-    $result.text(email + " is not valid :(");
-    $result.css("color", "red");
-  }
-  return false;
-}
-
-$("#email").on("keyup", validate);
